@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using dotnet_rpg.Services.CharacterService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,6 +29,14 @@ namespace dotnet_rpg
         {
 
             services.AddControllers();
+            //NOTE: Web API knows, that it has to use the characterService class whenever a controller wants to inject the ICharacterService.
+            //The beauty of that is, that whenever we want to change that and use another implementation class for instance, we change this line.
+            services.AddScoped<ICharacterService, CharacterService>();
+            /*
+                - AddScoped(): create a new instance of the requested service for every request that comes in.
+                - AddTransient(): provides a new instance to every controller and to every service.
+                - AddSingleton(): creates only one instance that is used for every request.
+            */
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "dotnet_rpg", Version = "v1" });
@@ -35,6 +44,7 @@ namespace dotnet_rpg
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // specify how the app responds to HTTP requests.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
